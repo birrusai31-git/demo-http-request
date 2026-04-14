@@ -1,0 +1,19 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:mcp="http://www.mulesoft.org/schema/mule/mcp" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd  http://www.mulesoft.org/schema/mule/mcp http://www.mulesoft.org/schema/mule/mcp/current/mule-mcp.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd  http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <http:listener-config name="Listener-config">
+        <http:listener-connection port="8079" host="0.0.0.0"></http:listener-connection>
+    </http:listener-config>
+    <flow name="name1">
+        <http:listener doc:id="lxitaa" doc:name="Listener" path="/employe_ACB" config-ref="Listener-config"></http:listener>
+        <logger doc:id="drcptv" doc:name="Logger" message="start of the flow"></logger>
+        <http:request doc:id="datxvz" doc:name="Request" url="https://dummy.restapiexample.com/api/v1/employees"></http:request>
+        <ee:transform doc:id="oipdrs" doc:name="Transform">
+            <ee:message>
+                <ee:set-payload doc:id="routbw" doc:name="Set payload"><![CDATA[%dw 2.0
+output application/json
+---
+payload.data filter ((item, index) -> (item.employee_age as Number) >= 60 )]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <logger doc:id="fpgrnw" doc:name="Logger" message="Employe detailes having age greater than or equal to 60: #[payload]"></logger>
+    </flow>
+</mule>
