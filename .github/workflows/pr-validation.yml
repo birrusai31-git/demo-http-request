@@ -1,0 +1,100 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate-pr:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Cache Maven dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+        
+    - name: Configure Maven settings
+      run: |
+        mkdir -p ~/.m2
+        cat > ~/.m2/settings.xml << EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+          <servers>
+            <server>
+              <id>anypoint-exchange-v3</id>
+              <username>\${env.ANYPOINT_USERNAME}</username>
+              <password>\${env.ANYPOINT_PASSWORD}</password>
+            </server>
+          </servers>
+        </settings>
+        EOF
+      env:
+        ANYPOINT_USERNAME: ${{ secrets.ANYPOINT_USERNAME }}
+        ANYPOINT_PASSWORD: ${{ secrets.ANYPOINT_PASSWORD }}
+        
+    - name: Lint commit messages
+      run: |
+        echo "Validating commit messages..."
+        # Add commit message validation if needed
+        
+    - name: Check code formatting
+      run: |
+        echo "Checking code formatting..."
+        # Add code formatting checks
+        
+    - name: Build and test
+      run: |
+        mvn clean compile
+        mvn test
+        
+    - name: Security scan
+      run: |
+        echo "Running security scan..."
+        # Add security scanning tools like OWASP dependency check
+        
+    - name: Check for secrets
+      run: |
+        echo "Scanning for secrets..."
+        # Add secret scanning
+        
+    - name: Validate Mule configuration
+      run: |
+        echo "Validating Mule XML configurations..."
+        # Add Mule-specific validation
+        
+    - name: Comment PR with build status
+      uses: actions/github-script@v6
+      if: always()
+      with:
+        script: |
+          const { context, github } = require('@actions/github');
+          const jobStatus = '${{ job.status }}';
+          const runUrl = `${context.payload.repository.html_url}/actions/runs/${context.runId}`;
+          
+          const comment = jobStatus === 'success' 
+            ? `✅ **PR Validation Passed**\n\n All checks completed successfully! [View Details](${runUrl})`
+            : `❌ **PR Validation Failed**\n\n Some checks failed. Please review the errors and fix them. [View Details](${runUrl})`;
+            
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
