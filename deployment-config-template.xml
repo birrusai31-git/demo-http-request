@@ -1,0 +1,121 @@
+<!-- CloudHub 2.0 Deployment Configuration Template -->
+<!-- Add this plugin configuration to your pom.xml <plugins> section -->
+
+<plugin>
+    <groupId>org.mule.tools.maven</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <version>${mule.maven.plugin.version}</version>
+    <extensions>true</extensions>
+    <configuration>
+        <!-- CloudHub 2.0 Deployment Configuration -->
+        <cloudhub2Deployment>
+            <!-- Anypoint Platform URI -->
+            <uri>https://anypoint.mulesoft.com</uri>
+            
+            <!-- Provider (MC for MuleSoft Cloud) -->
+            <provider>MC</provider>
+            
+            <!-- Authentication -->
+            <username>${cloudhub2.username}</username>
+            <password>${cloudhub2.password}</password>
+            
+            <!-- Environment Configuration -->
+            <environment>${cloudhub2.environment}</environment>
+            <businessGroup>${cloudhub2.businessGroup}</businessGroup>
+            
+            <!-- Target Configuration -->
+            <target>${cloudhub2.target}</target>
+            
+            <!-- Application Configuration -->
+            <applicationName>${cloudhub2.applicationName}</applicationName>
+            <muleVersion>${app.runtime}</muleVersion>
+            
+            <!-- Resource Allocation -->
+            <replicas>${cloudhub2.replicas}</replicas>
+            <vCores>${cloudhub2.vCores}</vCores>
+            
+            <!-- Optional: Application Properties -->
+            <properties>
+                <property>
+                    <key>env</key>
+                    <value>${cloudhub2.environment}</value>
+                </property>
+                <property>
+                    <key>http.port</key>
+                    <value>8081</value>
+                </property>
+                <!-- Add more properties as needed -->
+            </properties>
+            
+            <!-- Optional: JVM Arguments -->
+            <deploymentSettings>
+                <http>
+                    <inbound>
+                        <lastMileSecurity>true</lastMileSecurity>
+                    </inbound>
+                </http>
+                <runtime>
+                    <params>
+                        <param>-XX:+UseG1GC</param>
+                        <param>-XX:+UseStringDeduplication</param>
+                    </params>
+                </runtime>
+            </deploymentSettings>
+            
+            <!-- Optional: Monitoring Configuration -->
+            <monitoring>
+                <autoRestart>true</autoRestart>
+                <loggingNgEnabled>true</loggingNgEnabled>
+            </monitoring>
+            
+            <!-- Optional: Network Configuration -->
+            <network>
+                <!-- Configure if using VPC -->
+                <!-- <vpc>vpc-12345678</vpc> -->
+            </network>
+            
+        </cloudhub2Deployment>
+    </configuration>
+</plugin>
+
+<!-- 
+Environment-specific property examples:
+
+For Development:
+-Dcloudhub2.environment=Development
+-Dcloudhub2.applicationName=demo-http-request-dev
+-Dcloudhub2.replicas=1
+-Dcloudhub2.vCores=0.1
+-Dcloudhub2.target=CloudHub-US-East-NorthVirginia
+
+For Test:
+-Dcloudhub2.environment=Test
+-Dcloudhub2.applicationName=demo-http-request-test
+-Dcloudhub2.replicas=1
+-Dcloudhub2.vCores=0.2
+-Dcloudhub2.target=CloudHub-US-East-NorthVirginia
+
+For Production:
+-Dcloudhub2.environment=Production
+-Dcloudhub2.applicationName=demo-http-request-prod
+-Dcloudhub2.replicas=2
+-Dcloudhub2.vCores=1.0
+-Dcloudhub2.target=CloudHub-US-East-NorthVirginia
+
+Available vCore sizes:
+- MICRO: 0.1 vCores, 500 MB memory
+- SMALL: 0.2 vCores, 1 GB memory  
+- MEDIUM: 1.0 vCores, 1.5 GB memory
+- LARGE: 2.0 vCores, 3.5 GB memory
+- XLARGE: 4.0 vCores, 7.5 GB memory
+- XXLARGE: 8.0 vCores, 15 GB memory
+
+Available targets (regions):
+- CloudHub-US-East-NorthVirginia (us-east-1)
+- CloudHub-US-East-Ohio (us-east-2)
+- CloudHub-US-West-Oregon (us-west-2)
+- CloudHub-EU-Ireland (eu-west-1)
+- CloudHub-EU-Frankfurt (eu-central-1)
+- CloudHub-AP-Southeast-Sydney (ap-southeast-2)
+- CloudHub-AP-Southeast-Singapore (ap-southeast-1)
+-->
